@@ -1,29 +1,30 @@
 package menu;
 
+import com.google.inject.Inject;
 import entities.GameBoard;
 import finals.Finals;
 import frames.GameGraphicalComponent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
+import guiceModule.GraphicalComponentFactory;
 
+import javax.inject.Singleton;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Objects;
 
+@Singleton
 public class StartMenu extends Menu {
 
-    private static final long serialVersionUID = 1L;
-    private Logger logger;
+    @Inject
+    private GraphicalComponentFactory graphicalComponentFactory;
+    private GameGraphicalComponent graphicalComponent;
     private int size;
     private int width;
     private int height;
     private int gameType;
-    private GameGraphicalComponent graphicalComponent;
 
     public StartMenu() {
         super(Finals.GAME_TITLE);
-        this.logger = (Logger) LogManager.getLogger(StartMenu.class);
 
         // Changing the logo image.
         ImageIcon logo = new ImageIcon(Finals.LOGO_ICON);
@@ -41,23 +42,24 @@ public class StartMenu extends Menu {
     }
 
     public void start(int winner) {
-        try {
-            this.setVisible(false);
-            this.graphicalComponent.isRunning = false;
+
+        this.setVisible(false);
+        if (graphicalComponent != null) {
+            this.graphicalComponent.setGameStatus(false);
             displayGameResult(winner);
             this.remove(this.graphicalComponent);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        // Opening screen. The user choose the size.
+
+        // Opening menu screen. The user choose the size and game-mode.
         boolean continueFlag = displayOptions();
         if (!continueFlag) {
             System.exit(0);
         }
 
         this.setSize(width, height);
-        this.graphicalComponent = new GameGraphicalComponent(width, height, size, gameType);
+
+        this.graphicalComponent = graphicalComponentFactory.create(width, height, size, gameType);
 
         this.add(this.graphicalComponent);
 
@@ -77,11 +79,11 @@ public class StartMenu extends Menu {
         ImageIcon icon = new ImageIcon(Finals.LOGO_IMG);
 
         String[] gameOptions = {"Human VS Human", "Human VS Computer"};
-        JComboBox<String> gameType = new JComboBox<String>(gameOptions);
+        JComboBox<String> gameType = new JComboBox<>(gameOptions);
         gameType.setSelectedIndex(1);
 
         String[] sizeOptions = {"Huge", "Big", "Medium", "Small", "Tiny"};
-        JComboBox<String> sizeType = new JComboBox<String>(sizeOptions);
+        JComboBox<String> sizeType = new JComboBox<>(sizeOptions);
         sizeType.setSelectedIndex(2);
 
         Object[] message = {"Game Type:", gameType, "Choose the map size:", sizeType};
@@ -151,6 +153,5 @@ public class StartMenu extends Menu {
         }
         JOptionPane.showConfirmDialog(null, message, "THE END", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE, icon);
-
     }
 }

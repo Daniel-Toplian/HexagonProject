@@ -8,13 +8,12 @@ import static finals.Finals.EMPTY;
 import static finals.Finals.SIDES;
 
 public class Hexagon extends Polygon {
-    private Point[] points = new Point[SIDES];
+    private final Point[] points = new Point[SIDES];
     private Point center = new Point(0, 0);
-    private int radius;
-    private int rotation = 90;
+    private final int radius;
     private int player = EMPTY;
-    private int storageCol;
-    private int storageRow;
+    private final int storageCol;
+    private final int storageRow;
     private Color lineColor = Color.black;
 
     public Hexagon(Point center, int radius, int storageCol, int storageRow) {
@@ -72,6 +71,7 @@ public class Hexagon extends Polygon {
     }
 
     private double findAngle(double fraction) {
+        int rotation = 90;
         return fraction * Math.PI * 2 + Math.toRadians((rotation + 180) % 360);
     }
 

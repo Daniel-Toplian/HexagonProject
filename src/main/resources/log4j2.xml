@@ -9,10 +9,4 @@
             </PatternLayout>
         </File>
     </Appenders>
-    <Root level="INFO">
-        <AppenderRef ref="stdout" />
-    </Root>
-    <Root level="DEBUG">
-        <AppenderRef ref="fout" />
-    </Root>
 </Configuration>
