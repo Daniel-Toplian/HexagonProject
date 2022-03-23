@@ -2,9 +2,10 @@ package computerAi;
 
 import java.util.ArrayList;
 
-import board.GameBoard;
-import board.Hexagon;
-import board.Move;
+import entities.GameBoard;
+import entities.Hexagon;
+import entities.Move;
+import finals.Finals;
 
 public class Ai implements Runnable {
 
@@ -71,7 +72,7 @@ public class Ai implements Runnable {
 			return evaluate(tempBoard);
 		}
 
-		if (tempBoard.playerTurn == Hexagon.COMPUTER) {
+		if (tempBoard.playerTurn == Finals.COMPUTER) {
 			for (int i = 0; i < validMoves.size(); i++) {
 				GameBoard copy = tempBoard.clone();
 				Move move = validMoves.get(i);
@@ -99,7 +100,7 @@ public class Ai implements Runnable {
 				call++;
 
 				int score = alphaBetaPrunning(copy, depth - 1, alpha, beta, false);
-				copy.playerTurn = Hexagon.PLAYER1;
+				copy.playerTurn = Finals.PLAYER1;
 				if (score < beta) {
 					beta = score;
 				}
@@ -119,7 +120,7 @@ public class Ai implements Runnable {
 	 * @return The evaluation score.
 	 */
 	public int evaluate(GameBoard board) {
-		return board.playerHexagons[Hexagon.COMPUTER - 1] - board.playerHexagons[Hexagon.PLAYER1 - 1];
+		return board.playerHexagons[Finals.COMPUTER - 1] - board.playerHexagons[Finals.PLAYER1 - 1];
 	}
 
 	@Override

@@ -1,14 +1,13 @@
-package board;
+package entities;
+
+import finals.Finals;
 
 import java.awt.*;
 
+import static finals.Finals.EMPTY;
+import static finals.Finals.SIDES;
+
 public class Hexagon extends Polygon {
-    private static final long serialVersionUID = 1L;
-    public static final int SIDES = 6;
-    public static final int EMPTY = 0;
-    public static final int PLAYER1 = 1;
-    public static final int PLAYER2 = 2;
-    public static final int COMPUTER = PLAYER2;
     private Point[] points = new Point[SIDES];
     private Point center = new Point(0, 0);
     private int radius;
@@ -86,10 +85,10 @@ public class Hexagon extends Polygon {
         Color color = Color.black;
         if (filled) {
             switch (this.player) {
-                case PLAYER1:
+                case Finals.PLAYER1:
                     color = Color.red;
                     break;
-                case PLAYER2:
+                case Finals.PLAYER2:
                     color = Color.blue;
                     break;
                 default:

@@ -1,9 +1,9 @@
-package graphicalComponent;
+package menu;
 
-import board.GameBoard;
-import board.Hexagon;
+import entities.GameBoard;
 import finals.Finals;
-import game.Game;
+import frames.GameGraphicalComponent;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
 import javax.swing.*;
@@ -11,9 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Objects;
 
-import org.apache.logging.log4j.LogManager;
-
-public class GraphicalComponent extends JFrame {
+public class StartMenu extends Menu {
 
     private static final long serialVersionUID = 1L;
     private Logger logger;
@@ -21,14 +19,14 @@ public class GraphicalComponent extends JFrame {
     private int width;
     private int height;
     private int gameType;
-    private Game boardPanel;
+    private GameGraphicalComponent graphicalComponent;
 
-    public GraphicalComponent() {
-        super("Hexagon Game");
-        this.logger = (Logger) LogManager.getLogger(GraphicalComponent.class);
+    public StartMenu() {
+        super(Finals.GAME_TITLE);
+        this.logger = (Logger) LogManager.getLogger(StartMenu.class);
 
         // Changing the logo image.
-        ImageIcon logo = new ImageIcon("pics\\IconLogo.png");
+        ImageIcon logo = new ImageIcon(Finals.LOGO_ICON);
         this.setIconImage(logo.getImage());
 
         // Stop the program when closing the window.
@@ -40,28 +38,61 @@ public class GraphicalComponent extends JFrame {
                     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
             }
         });
-
-        newGame(0);
     }
 
-    public boolean menu() {
+    public void start(int winner) {
+        try {
+            this.setVisible(false);
+            this.graphicalComponent.isRunning = false;
+            displayGameResult(winner);
+            this.remove(this.graphicalComponent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Opening screen. The user choose the size.
+        boolean continueFlag = displayOptions();
+        if (!continueFlag) {
+            System.exit(0);
+        }
+
+        this.setSize(width, height);
+        this.graphicalComponent = new GameGraphicalComponent(width, height, size, gameType);
+
+        this.add(this.graphicalComponent);
+
+        new Thread(this.graphicalComponent).start();
+
+        // The size cannot be changed by the user.
+        this.setResizable(false);
+
+        // Puts the windows in the center.
+        this.setLocationRelativeTo(null);
+
+        this.setVisible(true);
+
+    }
+
+    public boolean displayOptions() {
         ImageIcon icon = new ImageIcon(Finals.LOGO_IMG);
+
         String[] gameOptions = {"Human VS Human", "Human VS Computer"};
         JComboBox<String> gameType = new JComboBox<String>(gameOptions);
         gameType.setSelectedIndex(1);
+
         String[] sizeOptions = {"Huge", "Big", "Medium", "Small", "Tiny"};
         JComboBox<String> sizeType = new JComboBox<String>(sizeOptions);
         sizeType.setSelectedIndex(2);
-        Object[] message = {"Game Type:", gameType, "Choose the map size:", sizeType};
-        int option = JOptionPane.showConfirmDialog(null, message, "Hexxagon", JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.INFORMATION_MESSAGE, icon);
 
-        // If the user want to quit
+        Object[] message = {"Game Type:", gameType, "Choose the map size:", sizeType};
+        int option = JOptionPane.showConfirmDialog(null, message, "Hexagon", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, icon);
+
+        // If the user wants to quit
         if (option != JOptionPane.OK_OPTION) {
             if (quit())
                 return false;
             else
-                return menu();
+                return displayOptions();
         }
 
         // Updating the game type
@@ -108,49 +139,13 @@ public class GraphicalComponent extends JFrame {
         return confirmed == JOptionPane.YES_OPTION;
     }
 
-    public void newGame(int winner) {
-        try {
-            this.setVisible(false);
-            this.boardPanel.isRunning = false;
-            endScreen(winner);
-            this.remove(this.boardPanel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Opening screen. The user choose the size.
-        boolean continueFlag = menu();
-        if (!continueFlag) {
-            System.exit(0);
-        }
-
-        this.setSize(width, height);
-        this.boardPanel = new Game(width, height, size, gameType);
-
-        //Adding the JPanel.
-        this.add(this.boardPanel);
-
-        // Starts a new Thread.
-        new Thread(this.boardPanel).start();
-        // new Thread(this.scorePanel).start();
-
-        // The size cannot be changed by the user.
-        this.setResizable(false);
-
-        // Puts the windows in the center.
-        this.setLocationRelativeTo(null);
-
-        this.setVisible(true);
-
-    }
-
-    private void endScreen(int winner) {
+    private void displayGameResult(int winner) {
         ImageIcon icon = new ImageIcon(Finals.WINNER_IMG);
         String message = "Congrats Player " + winner + "\nYou Won!";
         if (winner == 0) {
             message = "Tie";
             icon = new ImageIcon(Finals.GAMEOVER_IMG);
-        } else if (this.boardPanel.getGameType() == Game.HumanVsComputer && winner == Hexagon.COMPUTER) {
+        } else if (this.graphicalComponent.getGameType() == GameGraphicalComponent.HumanVsComputer && winner == Finals.COMPUTER) {
             message = "The Computer Won";
             icon = new ImageIcon(Finals.GAMEOVER_IMG);
         }

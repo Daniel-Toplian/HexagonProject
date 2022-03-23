@@ -1,11 +1,13 @@
 package guiceModule;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
+import com.google.inject.AbstractModule;
+import menu.Menu;
+import menu.StartMenu;
 
-public class HexagonGuiceModule implements Module {
+public class HexagonGuiceModule extends AbstractModule {
+
     @Override
-    public void configure(Binder binder) {
-
+    protected void configure() {
+        bind(Menu.class).to(StartMenu.class);
     }
 }

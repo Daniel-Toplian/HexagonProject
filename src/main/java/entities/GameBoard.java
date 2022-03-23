@@ -1,4 +1,6 @@
-package board;
+package entities;
+
+import finals.Finals;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ public class GameBoard {
 		this.size = size;
 		this.hexagons = new Hexagon[size + 4][size + 4];
 		this.playerHexagons = new int[2];
-		this.playerTurn = Hexagon.PLAYER1;
+		this.playerTurn = Finals.PLAYER1;
 		this.width = width;
 		this.height = height;
 	}
@@ -45,27 +47,27 @@ public class GameBoard {
 
 				// Placing the initial pieces
 				if (storageRow == 2 && col == 0) {
-					hex.setPlayer(Hexagon.PLAYER1);
+					hex.setPlayer(Finals.PLAYER1);
 				} else if (storageRow == 2 && col == cols - 1) {
-					hex.setPlayer(Hexagon.PLAYER2);
+					hex.setPlayer(Finals.PLAYER2);
 				} else if (storageCol == 2 && col == 0 && row == half) {
-					hex.setPlayer(Hexagon.PLAYER2);
+					hex.setPlayer(Finals.PLAYER2);
 				}
 
 				else if (row == half && col == cols - 1) {
-					hex.setPlayer(Hexagon.PLAYER1);
+					hex.setPlayer(Finals.PLAYER1);
 				} else if (storageRow == size + 1 && col == 0) {
-					hex.setPlayer(Hexagon.PLAYER1);
+					hex.setPlayer(Finals.PLAYER1);
 				} else if (storageRow == size + 1 && col == cols - 1) {
-					hex.setPlayer(Hexagon.PLAYER2);
+					hex.setPlayer(Finals.PLAYER2);
 				}
 
 				this.hexagons[storageRow][storageCol] = hex;
 			}
 		}
-		this.playerHexagons[Hexagon.PLAYER1 - 1] = 3;
-		this.playerHexagons[Hexagon.PLAYER2 - 1] = 3;
-		this.playerTurn = Hexagon.PLAYER1;
+		this.playerHexagons[Finals.PLAYER1 - 1] = 3;
+		this.playerHexagons[Finals.PLAYER2 - 1] = 3;
+		this.playerTurn = Finals.PLAYER1;
 		this.numOfHexagons = count;
 	}
 
@@ -80,14 +82,14 @@ public class GameBoard {
 					cloneBoard.hexagons[i][j].setPlayer(this.hexagons[i][j].getPlayer());
 			}
 		}
-		cloneBoard.playerHexagons[Hexagon.PLAYER1 - 1] = this.playerHexagons[Hexagon.PLAYER1 - 1];
-		cloneBoard.playerHexagons[Hexagon.PLAYER2 - 1] = this.playerHexagons[Hexagon.PLAYER2 - 1];
+		cloneBoard.playerHexagons[Finals.PLAYER1 - 1] = this.playerHexagons[Finals.PLAYER1 - 1];
+		cloneBoard.playerHexagons[Finals.PLAYER2 - 1] = this.playerHexagons[Finals.PLAYER2 - 1];
 		cloneBoard.playerTurn = this.playerTurn;
 		return cloneBoard;
 	}
 
 	public boolean isGameOver() {
-		if (playerHexagons[Hexagon.PLAYER1 - 1] + playerHexagons[Hexagon.PLAYER2 - 1] == this.numOfHexagons) {
+		if (playerHexagons[Finals.PLAYER1 - 1] + playerHexagons[Finals.PLAYER2 - 1] == this.numOfHexagons) {
 			return true;
 		}
 		boolean canNextPlayerMove = false;
@@ -110,14 +112,14 @@ public class GameBoard {
 		return getCloseNeighbors(current, this.hexagons);
 	}
 
-	public static Hexagon[] getCloseNeighbors(Hexagon current, Hexagon allHexagnos[][]) {
+	public static Hexagon[] getCloseNeighbors(Hexagon current, Hexagon allHexagons[][]) {
 		Hexagon[] neighbors = new Hexagon[6];
-		neighbors[0] = allHexagnos[current.getStorageRow() - 1][current.getStorageCol()];
-		neighbors[1] = allHexagnos[current.getStorageRow() - 1][current.getStorageCol() + 1];
-		neighbors[2] = allHexagnos[current.getStorageRow()][current.getStorageCol() + 1];
-		neighbors[3] = allHexagnos[current.getStorageRow() + 1][current.getStorageCol()];
-		neighbors[4] = allHexagnos[current.getStorageRow()][current.getStorageCol() - 1];
-		neighbors[5] = allHexagnos[current.getStorageRow() + 1][current.getStorageCol() - 1];
+		neighbors[0] = allHexagons[current.getStorageRow() - 1][current.getStorageCol()];
+		neighbors[1] = allHexagons[current.getStorageRow() - 1][current.getStorageCol() + 1];
+		neighbors[2] = allHexagons[current.getStorageRow()][current.getStorageCol() + 1];
+		neighbors[3] = allHexagons[current.getStorageRow() + 1][current.getStorageCol()];
+		neighbors[4] = allHexagons[current.getStorageRow()][current.getStorageCol() - 1];
+		neighbors[5] = allHexagons[current.getStorageRow() + 1][current.getStorageCol() - 1];
 		return neighbors;
 	}
 
@@ -125,27 +127,27 @@ public class GameBoard {
 		return getFarNeighbors(current, this.hexagons);
 	}
 
-	public static Hexagon[] getFarNeighbors(Hexagon current, Hexagon allHexagnos[][]) {
+	public static Hexagon[] getFarNeighbors(Hexagon current, Hexagon allHexagons [][]) {
 		Hexagon[] neighbors = new Hexagon[12];
-		neighbors[0] = allHexagnos[current.getStorageRow()][current.getStorageCol() - 2];
-		neighbors[1] = allHexagnos[current.getStorageRow() + 1][current.getStorageCol() - 2];
-		neighbors[2] = allHexagnos[current.getStorageRow() + 2][current.getStorageCol() - 2];
-		neighbors[3] = allHexagnos[current.getStorageRow() + 2][current.getStorageCol() - 1];
-		neighbors[4] = allHexagnos[current.getStorageRow() + 2][current.getStorageCol()];
-		neighbors[5] = allHexagnos[current.getStorageRow() + 1][current.getStorageCol() + 1];
-		neighbors[6] = allHexagnos[current.getStorageRow()][current.getStorageCol() + 2];
-		neighbors[7] = allHexagnos[current.getStorageRow() - 1][current.getStorageCol() + 2];
-		neighbors[8] = allHexagnos[current.getStorageRow() - 2][current.getStorageCol() + 2];
-		neighbors[9] = allHexagnos[current.getStorageRow() - 2][current.getStorageCol() + 1];
-		neighbors[10] = allHexagnos[current.getStorageRow() - 1][current.getStorageCol() - 1];
-		neighbors[11] = allHexagnos[current.getStorageRow() - 2][current.getStorageCol()];
+		neighbors[0] = allHexagons[current.getStorageRow()][current.getStorageCol() - 2];
+		neighbors[1] = allHexagons[current.getStorageRow() + 1][current.getStorageCol() - 2];
+		neighbors[2] = allHexagons[current.getStorageRow() + 2][current.getStorageCol() - 2];
+		neighbors[3] = allHexagons[current.getStorageRow() + 2][current.getStorageCol() - 1];
+		neighbors[4] = allHexagons[current.getStorageRow() + 2][current.getStorageCol()];
+		neighbors[5] = allHexagons[current.getStorageRow() + 1][current.getStorageCol() + 1];
+		neighbors[6] = allHexagons[current.getStorageRow()][current.getStorageCol() + 2];
+		neighbors[7] = allHexagons[current.getStorageRow() - 1][current.getStorageCol() + 2];
+		neighbors[8] = allHexagons[current.getStorageRow() - 2][current.getStorageCol() + 2];
+		neighbors[9] = allHexagons[current.getStorageRow() - 2][current.getStorageCol() + 1];
+		neighbors[10] = allHexagons[current.getStorageRow() - 1][current.getStorageCol() - 1];
+		neighbors[11] = allHexagons[current.getStorageRow() - 2][current.getStorageCol()];
 		return neighbors;
 	}
 
 	public boolean canHexDuplicate(Hexagon hex) {
 		Hexagon[] closeNeighbors = getCloseNeighbors(hex);
 		for (int i = 0; i < closeNeighbors.length; i++) {
-			if (closeNeighbors[i] != null && closeNeighbors[i].getPlayer() == Hexagon.EMPTY) {
+			if (closeNeighbors[i] != null && closeNeighbors[i].getPlayer() == Finals.EMPTY) {
 				return true;
 			}
 		}
@@ -155,7 +157,7 @@ public class GameBoard {
 	public boolean canHexJump(Hexagon hex) {
 		Hexagon[] farNeighbors = getFarNeighbors(hex);
 		for (int i = 0; i < farNeighbors.length; i++) {
-			if (farNeighbors[i] != null && farNeighbors[i].getPlayer() == Hexagon.EMPTY) {
+			if (farNeighbors[i] != null && farNeighbors[i].getPlayer() == Finals.EMPTY) {
 				return true;
 			}
 		}
@@ -210,14 +212,14 @@ public class GameBoard {
 			move.getHexTo().setPlayer(boardToMove.playerTurn);
 		} else if (isJumpMove(move, boardToMove)) {
 			boardToMove.hexagons[move.getHexTo().getStorageRow()][move.getHexTo().getStorageCol()].setPlayer(boardToMove.playerTurn);
-			boardToMove.hexagons[move.getHexFrom().getStorageRow()][move.getHexFrom().getStorageCol()].setPlayer(Hexagon.EMPTY);
+			boardToMove.hexagons[move.getHexFrom().getStorageRow()][move.getHexFrom().getStorageCol()].setPlayer(Finals.EMPTY);
 			move.getHexTo().setPlayer(boardToMove.playerTurn);
-			move.getHexFrom().setPlayer(Hexagon.EMPTY);
+			move.getHexFrom().setPlayer(Finals.EMPTY);
 		} else {
 			return false;
 		}
 		convertNeighbors(move.getHexTo(), boardToMove);
-		boardToMove.playerTurn = boardToMove.playerTurn == Hexagon.PLAYER1 ? Hexagon.PLAYER2 : Hexagon.PLAYER1;
+		boardToMove.playerTurn = boardToMove.playerTurn == Finals.PLAYER1 ? Finals.PLAYER2 : Finals.PLAYER1;
 		return true;
 	}
 
@@ -232,9 +234,9 @@ public class GameBoard {
 			if (currentHexCloseNeighbors[i] != null && currentHexCloseNeighbors[i].getPlayer() != boardToMove.playerTurn
 					&& currentHexCloseNeighbors[i].getPlayer() != 0) {
 				currentHexCloseNeighbors[i]
-						.setPlayer(hex.getPlayer() == Hexagon.PLAYER1 ? Hexagon.PLAYER1 : Hexagon.PLAYER2);
+						.setPlayer(hex.getPlayer() == Finals.PLAYER1 ? Finals.PLAYER1 : Finals.PLAYER2);
 				boardToMove.playerHexagons[hex.getPlayer() - 1]++;
-				boardToMove.playerHexagons[hex.getPlayer() == Hexagon.PLAYER1 ? 1 : 0]--;
+				boardToMove.playerHexagons[hex.getPlayer() == Finals.PLAYER1 ? 1 : 0]--;
 			}
 		}
 	}
@@ -268,14 +270,14 @@ public class GameBoard {
 		for (int i = 0; i < playerHexagons.size(); i++) {
 			Hexagon closeNeighbors[] = getCloseNeighbors(playerHexagons.get(i));
 			for (int j = 0; j < closeNeighbors.length; j++) {
-				if (closeNeighbors[j] != null && closeNeighbors[j].getPlayer() == Hexagon.EMPTY) {
+				if (closeNeighbors[j] != null && closeNeighbors[j].getPlayer() == Finals.EMPTY) {
 					allMoves.add(new Move(playerHexagons.get(i), closeNeighbors[j]));
 				}
 
 			}
 			Hexagon farNeighbors[] = getFarNeighbors(playerHexagons.get(i));
 			for (int j = 0; j < farNeighbors.length; j++) {
-				if (farNeighbors[j] != null && farNeighbors[j].getPlayer() == Hexagon.EMPTY) {
+				if (farNeighbors[j] != null && farNeighbors[j].getPlayer() == Finals.EMPTY) {
 					allMoves.add(new Move(playerHexagons.get(i), farNeighbors[j]));
 				}
 			}

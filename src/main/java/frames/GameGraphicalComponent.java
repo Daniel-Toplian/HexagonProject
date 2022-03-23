@@ -1,11 +1,11 @@
-package game;
+package frames;
 
-import board.GameBoard;
-import board.Hexagon;
-import board.Move;
+import entities.GameBoard;
+import entities.Hexagon;
+import entities.Move;
 import computerAi.Ai;
 import finals.Finals;
-import graphicalComponent.GraphicalComponent;
+import menu.StartMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
@@ -14,23 +14,23 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class Game extends JPanel implements MouseListener, Runnable {
+public class GameGraphicalComponent extends JPanel implements MouseListener, Runnable {
 
 	private static final long serialVersionUID = 1L;
 	public static final long HumanVsHuman = 0;
 	public static final long HumanVsComputer = 1;
 	private final Logger logger;
-	private int widthFrame;
-	private int heightFrame;
+	private final int widthFrame;
+	private final int heightFrame;
 	private int size;
-	private GameBoard board;
-	private int gameType;
+	private final GameBoard board;
+	private final int gameType;
 	private Hexagon oldClickedHex;
 	public boolean isRunning;
 	public Ai AiEnemy;
 
-	public Game(int width, int height, int size, int gameType) {
-		this.logger = (Logger) LogManager.getLogger(Game.class);
+	public GameGraphicalComponent(int width, int height, int size, int gameType) {
+		this.logger = (Logger) LogManager.getLogger(GameGraphicalComponent.class);
 		this.widthFrame = width;
 		this.heightFrame = height;
 		this.gameType = gameType;
@@ -48,7 +48,7 @@ public class Game extends JPanel implements MouseListener, Runnable {
 		Graphics gImage = img.getGraphics();
 		ImageIcon background = new ImageIcon(Finals.BACKGROUND_IMG);
 		background.paintIcon(null, gImage, 0, 0);
-		if (this.board.playerHexagons[0] == Hexagon.EMPTY || this.board.playerHexagons[1] == Hexagon.EMPTY) {
+		if (this.board.playerHexagons[0] == Finals.EMPTY || this.board.playerHexagons[1] == Finals.EMPTY) {
 		} else {
 			for (int i = 2; i < this.board.hexagons.length - 2; i++) {
 				for (int j = 2; j < this.board.hexagons.length - 2; j++) {
@@ -62,13 +62,13 @@ public class Game extends JPanel implements MouseListener, Runnable {
 		}
 		
 		// Drawing Score String
-		String ScoreStr = "Player 1 = " + this.board.playerHexagons[Hexagon.PLAYER1 - 1] + "\nPlayer 2 = "
-				+ this.board.playerHexagons[Hexagon.PLAYER2 - 1];
+		String ScoreStr = "Player 1 = " + this.board.playerHexagons[Finals.PLAYER1 - 1] + "\nPlayer 2 = "
+				+ this.board.playerHexagons[Finals.PLAYER2 - 1];
 
 		gImage.setFont(new Font("Calibri", Font.PLAIN, 18));
 		
 		// If it's the computer turn
-		if (this.gameType == HumanVsComputer && this.board.playerTurn == Hexagon.COMPUTER) {
+		if (this.gameType == HumanVsComputer && this.board.playerTurn == Finals.COMPUTER) {
 			String ComputerStr = "The computer is thinking...\n";
 			gImage.setColor(Color.YELLOW);
 			drawString(gImage, ComputerStr, 10, 10);
@@ -112,10 +112,10 @@ public class Game extends JPanel implements MouseListener, Runnable {
 		int y = e.getY();
 		boolean turnDone = false;
 		Hexagon currentHex = checkIfHexagonClicked(new Point(x, y));
-		if (gameType == HumanVsHuman || (gameType == HumanVsComputer && this.board.playerTurn != Hexagon.COMPUTER)) {
+		if (gameType == HumanVsHuman || (gameType == HumanVsComputer && this.board.playerTurn != Finals.COMPUTER)) {
 			if (oldClickedHex != null) {
 				if (currentHex != null && oldClickedHex.getPlayer() == this.board.playerTurn
-						&& currentHex.getPlayer() == Hexagon.EMPTY) {
+						&& currentHex.getPlayer() == Finals.EMPTY) {
 					Move moveToDo = new Move(oldClickedHex, currentHex);
 					if (GameBoard.doMove(moveToDo, this.board)) {
 						System.out.println(moveToDo.toString());
@@ -188,37 +188,34 @@ public class Game extends JPanel implements MouseListener, Runnable {
 	public void run() {
 		while (isRunning) {
 
-			// Checks if the game ended.
 			if (this.board.isGameOver()) {
-
-
-
 				int winner = 0;
+
 				// Checks who won.
-				if (this.board.playerHexagons[Hexagon.PLAYER1 - 1] > this.board.playerHexagons[Hexagon.PLAYER2 - 1]) {
-					winner = Hexagon.PLAYER1;
+				if (this.board.playerHexagons[Finals.PLAYER1 - 1] > this.board.playerHexagons[Finals.PLAYER2 - 1]) {
+					winner = Finals.PLAYER1;
 					System.out.println("Congrats Player 1");
 					this.logger.info("Congrats Player 1");
-				} else if (this.board.playerHexagons[Hexagon.PLAYER1 - 1] < this.board.playerHexagons[Hexagon.PLAYER2
-						- 1]) {
-					winner = Hexagon.PLAYER2;
+				} else if (this.board.playerHexagons[Finals.PLAYER1 - 1] < this.board.playerHexagons[Finals.PLAYER2 - 1]) {
+					winner = Finals.PLAYER2;
 					//System.out.println("Congrats Player 2");
 					this.logger.info("Congrats Player 2");
 				} else {
 					System.out.println("Tie");
 				}
 
-				GraphicalComponent frame = (GraphicalComponent) SwingUtilities.windowForComponent(this);
-				frame.newGame(winner);
+				StartMenu frame = (StartMenu) SwingUtilities.windowForComponent(this);
+				frame.start(winner);
 			}
 
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
+				logger.error("");
 			}
 
 			// The computer plays if it's his turn
-			if (gameType == HumanVsComputer && this.board.playerTurn == Hexagon.COMPUTER) {
+			if (gameType == HumanVsComputer && this.board.playerTurn == Finals.COMPUTER) {
 
 				if (this.AiEnemy == null || !this.AiEnemy.isRunning) {
 					this.AiEnemy = new Ai(this.board);
@@ -251,5 +248,4 @@ public class Game extends JPanel implements MouseListener, Runnable {
 	public void mouseExited(MouseEvent e) {
 
 	}
-
 }

@@ -1,4 +1,4 @@
-package board;
+package entities;
 
 public class Move {
 	private Hexagon hexFrom;
