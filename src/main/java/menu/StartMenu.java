@@ -44,6 +44,7 @@ public class StartMenu extends Menu {
     public void start(int winner) {
 
         this.setVisible(false);
+
         if (graphicalComponent != null) {
             this.graphicalComponent.setGameStatus(false);
             displayGameResult(winner);

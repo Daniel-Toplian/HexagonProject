@@ -3,10 +3,12 @@ package frames;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import computerAi.Ai;
+import computerAi.MiniMaxAlgoAi;
 import entities.GameBoard;
 import entities.Hexagon;
 import entities.Move;
 import finals.Finals;
+import guiceModule.AiFactory;
 import guiceModule.GameBoardFactory;
 import menu.Menu;
 import org.apache.logging.log4j.LogManager;
@@ -23,27 +25,28 @@ public class GameGraphicalComponent extends JPanel implements MouseListener, Run
     public static final long HumanVsComputer = 1;
     private final int widthFrame;
     private final int heightFrame;
-    private final int size;
     private final int gameType;
     private final GameBoard board;
     private final Logger logger;
     private Hexagon oldClickedHex;
     private boolean gameStatus;
-    public Ai AiEnemy;
+    private Ai AiEnemy;
+    private AiFactory aiFactory;
+
 
     @Inject
     public GameGraphicalComponent(@Assisted("width") int width, @Assisted("height") int height, @Assisted("size") int size, @Assisted("gameType") int gameType,
-                                  GameBoardFactory gameBoardFactory) {
+                                  GameBoardFactory gameBoardFactory, AiFactory aiFactory) {
         this.logger = (Logger) LogManager.getLogger(GameGraphicalComponent.class);
         this.widthFrame = width;
         this.heightFrame = height;
         this.gameType = gameType;
-        this.size = size;
         this.board = gameBoardFactory.create(size, width, height);
         this.board.initial();
         this.gameStatus = true;
         addMouseListener(this);
         this.oldClickedHex = null;
+        this.aiFactory = aiFactory;
     }
 
     @Override
@@ -228,8 +231,8 @@ public class GameGraphicalComponent extends JPanel implements MouseListener, Run
             // The computer plays if it's his turn
             if (gameType == HumanVsComputer && this.board.playerTurn == Finals.COMPUTER) {
 
-                if (this.AiEnemy == null || !this.AiEnemy.isRunning) {
-                    this.AiEnemy = new Ai(this.board);
+                if (this.AiEnemy == null || !this.AiEnemy.isRunning()) {
+                    this.AiEnemy = aiFactory.create(this.board);
                     new Thread(this.AiEnemy).start();
 
                     oldClickedHex = null;
